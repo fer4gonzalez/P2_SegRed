@@ -15,8 +15,8 @@ luser = []
 lpasswd = []
 
 parser = reqparse.RequestParser()
-user = parser.add_argument("username")
-passwd = parser.add_argument("password")
+parser.add_argument('username', required=True, help="Username cannot be blank!")
+parser.add_argument('password', required=True, help="Password cannot be blank!")
 
 class Version(rest.Resource):
     def get(self):
@@ -25,8 +25,10 @@ class Version(rest.Resource):
 class Signup(rest.Resource):
     def post(self):
         args = parser.parse_args()
-        username = args["username"]
-        password = args["password"]
+        username = args['username']
+        password = args['password']
+        print(username)
+        print(password)
         auth = AuthToken(username, EXP_MIN, password)
         token = auth.encode()
         USERS[username] = password
