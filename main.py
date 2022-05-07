@@ -24,11 +24,10 @@ class Version(rest.Resource):
 
 class Signup(rest.Resource):
     def post(self):
+        breakpoint()
         args = parser.parse_args()
         username = args['username']
         password = args['password']
-        print(username)
-        print(password)
         auth = AuthToken(username, EXP_MIN, password)
         token = auth.encode()
         USERS[username] = password
