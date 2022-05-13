@@ -6,8 +6,10 @@ from flask import jsonify
 
 
 def expire_date(seconds: int):
+    #Fecha actual:
     now = datetime.now()
-    new_date = now + timedelta(seconds)
+    #Cálculo de la duración del token en segundos
+    new_date = now + timedelta.seconds(seconds)
 
 def write_token(data:dict):
     token = encode(payload={**data,"exp": expire_date(5)}, key=getenv("SECRET"),algorithm="HS256")

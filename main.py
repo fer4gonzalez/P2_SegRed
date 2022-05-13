@@ -1,7 +1,10 @@
-from flask import Flask
-from auth_token import AuthToken
+from flask import Flask, jsonify
+#from auth_token import AuthToken
 from flask_restful import reqparse
 import flask_restful as rest
+from uuid import uuid4
+import hashlib
+
 
 app = Flask(__name__)
 api = rest.Api(app)
@@ -24,15 +27,14 @@ class Version(rest.Resource):
 
 class Signup(rest.Resource):
     def post(self):
-        breakpoint()
         args = parser.parse_args()
-        username = args['username']
-        password = args['password']
-        auth = AuthToken(username, EXP_MIN, password)
-        token = auth.encode()
-        USERS[username] = password
-
-        return {token.token:username}
+        username = args.username
+        password = args.password
+        #auth = AuthToken(username, EXP_MIN, password)
+        #token = auth.encode("utf-8")
+        hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        auth_token = uuid4()
+        return token
 
 class Login(rest.Resource):
     def post(self):
