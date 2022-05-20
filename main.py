@@ -71,24 +71,8 @@ class Login(rest.Resource):
                     return {"message": "Incorrect user or password"}, 403
 
         file.close()
+
         return {"message": "Incorrect user or password"}, 403
-
-        '''
-        FERNANDO:
-        for u in USERS:
-            luser.append(u)
-            lpasswd.append(USERS[u])
-        
-        args = parser.parse_args()
-        username = args["username"]
-        password = args["password"]
-
-        if username in luser:
-            if lpasswd[luser.index(username)] == password:
-                auth = AuthToken(username, EXP_MIN, password)
-                token = auth.encode()
-                return {token.token:username}
-        '''
 
 
 api.add_resource(Version, "/", "/version")
