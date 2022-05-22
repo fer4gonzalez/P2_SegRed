@@ -1,10 +1,8 @@
 from flask import Flask, jsonify, request
-from auth_token import AuthToken
 from flask_restful import reqparse
 import flask_restful as rest
 from uuid import uuid4
-from dotenv import load_dotenv
-from function_token import write_token
+import function_token
 import hashlib
 
 
@@ -14,10 +12,7 @@ api = rest.Api(app)
 VERSION = "1.0.0"
 EXP_MIN = 5
 
-USERS = {}
-
-luser = []
-lpasswd = []
+dictionary_list=[]
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', required=True, help="Username cannot be blank!")
@@ -41,14 +36,13 @@ class Signup(rest.Resource):
                 file.close()
                 return {"message": "User already exists"}, 409
 
-        auth = AuthToken(username, EXP_MIN, password)
-        #token = auth.encode()
         hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
         content = username + " : " + hash + "\n"
         file.write(content)
-        auth_token = jsonify(uuid4())
+        auth_token = uuid4()
+        dictionary_list.append({'username':username, 'token': auth_token, 'exp': function_token.expire_date(5)})
         file.close()
-        return auth_token
+        return jsonify(auth_token)
 
 class Login(rest.Resource):
     def post(self):
@@ -58,6 +52,7 @@ class Login(rest.Resource):
         password = args.password
         hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
         file = open(".shadow", 'r')
+        counter = 0
 
         lines = file.readlines()
         for line in lines:
@@ -65,7 +60,20 @@ class Login(rest.Resource):
                 blocks = line.split()
                 if(hash == blocks[3]):
                     file.close()
-                    return {"message": "Login success"}, 200
+                    auth_token = uuid4()
+                    if(len(dictionary_list)==0):
+                        dictionary_list.append({'username':username, 'token': auth_token, 'exp': function_token.expire_date(5)})
+                    else:
+                        for i in range(0,len(dictionary_list)):
+                            if username in dictionary_list[i].values():
+                                dictionary_list[i].update({'token': auth_token})
+                                counter = counter +1
+                                print("Estoy dentro del if")
+                        if counter == 0:
+                            dictionary_list.append({'username':username, 'token': auth_token, 'exp': function_token.expire_date(5)})
+                        
+                    print(dictionary_list)
+                    return jsonify(auth_token)
                 else:
                     file.close()
                     return {"message": "Incorrect user or password"}, 403
@@ -80,5 +88,4 @@ api.add_resource(Signup, "/signup")
 api.add_resource(Login, "/login")
 
 if __name__ == "__main__":
-    load_dotenv()
     app.run(debug=True)
