@@ -20,6 +20,9 @@ parser.add_argument('username', required=True, help="Username cannot be blank!")
 parser.add_argument('password', required=True, help="Password cannot be blank!")
 parser.add_argument('token', location='headers')
 
+#Métodos utiles.
+
+#--------------------------------API RESOURCES--------------------------------#
 
 class Version(rest.Resource):
     def get(self):
@@ -104,7 +107,7 @@ class Login(rest.Resource):
 
         return {"message": "Incorrect user or password"}, 403
 
-class UserDoc(rest.Resource):
+class FileManager(rest.Resource):
     def get(self):
         return 0
     def post(self):
@@ -117,7 +120,7 @@ class UserDoc(rest.Resource):
 api.add_resource(Version, "/", "/version")
 api.add_resource(Signup, "/signup")
 api.add_resource(Login, "/login")
-api.add_resource(UserDoc, "/<string:username>/<string:doc_id>")
+api.add_resource(FileManager, "/<string:username>/<string:doc_id>")
 
 if __name__ == "__main__":
     app.run(debug=True)
