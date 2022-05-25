@@ -1,9 +1,12 @@
+from mimetypes import init
 from flask import Flask, jsonify, request
 from flask_restful import reqparse
 import flask_restful as rest
 from uuid import uuid4
+import json
 import function_token
 import hashlib
+import os
 
 
 app = Flask(__name__)
@@ -12,15 +15,63 @@ api = rest.Api(app)
 VERSION = "1.0.0"
 EXP_MIN = 5
 
+
 #Lista de diccionarios en los que se guardaran los tokens asociados a cada usuario junto con el tiempo de expiracion
 dictionary_list=[]
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', required=True, help="Username cannot be blank!")
 parser.add_argument('password', required=True, help="Password cannot be blank!")
-parser.add_argument('token', location='headers')
+#parser.add_argument('token', location='headers')
 
-#Métodos utiles.
+
+# ----- INICIALIZACION -----
+        
+def __init__():
+        if not os.path.exists("users"):
+                try:
+                        os.mkdir("users")
+                except OSError:
+                        print("Error. The users directory could not be created")
+                        return -1
+                
+        if not os.path.exists(".shadow"):
+                file=open(".shadow","w")
+                file.close()
+
+#--------------------------------MÉTODOS ÚTILES--------------------------------#
+def exists_user(username):
+    count = 0
+    file =open(".shadow",'+r') #Apertura del archivo
+    lines = file.readlines()
+    for line in lines:
+        if username in line:
+            file.close()
+            count=count+1
+            return True
+    if count > 0:
+        return False
+        
+def chk_petition(username,doc_id):
+    auth=request.headers.get('Authentication')
+    if auth != None:
+        type,token = auth.split()
+        
+    return 0
+
+#Método que devuelve todos los archivos de un usuario
+def get_all_docs(username):
+    all_docs={}
+    path = "users/"+username
+    content = os.listdir(path)
+    if len(content) > 0:
+        for doc in contenido:
+            doc_path = path + "/" + doc
+            data = json.load(open(doc_path))
+            all_docs[doc] = data
+        return all_docs
+    else:
+        return None
 
 #--------------------------------API RESOURCES--------------------------------#
 
@@ -43,20 +94,18 @@ class Signup(rest.Resource):
         username = args.username
         password = args.password
         file =open(".shadow",'+r') #Apertura del archivo
+       
+        if(exists_user(username)==False):
+            hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
+            content = username + " : " + hash + "\n"
+            file.write(content)
+            auth_token = uuid4()
+            token_msg = {"access_token": auth_token}
+            dictionary_list.append({'username':username, 'token': auth_token, 'exp': function_token.expire_date(5)})
+            file.close()
+        else:
+            return {"message": "User already exists"}, 409
 
-        lines = file.readlines()
-        for line in lines:
-            if username in line:
-                file.close()
-                return {"message": "User already exists"}, 409
-
-        hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
-        content = username + " : " + hash + "\n"
-        file.write(content)
-        auth_token = uuid4()
-        token_msg = {"access_token": auth_token}
-        dictionary_list.append({'username':username, 'token': auth_token, 'exp': function_token.expire_date(5)})
-        file.close()
         return jsonify(token_msg)
 
 class Login(rest.Resource):
@@ -108,7 +157,22 @@ class Login(rest.Resource):
         return {"message": "Incorrect user or password"}, 403
 
 class FileManager(rest.Resource):
-    def get(self):
+    def get(self,username,doc_id):
+        path="users/"+username+"/"+doc_id
+        if(doc_id=="_all_docs"):
+            all_docs = get_all_docs(username)
+            if(all_docs != None):
+                return all_docs
+            else:
+                return jsonify({"message":"No docs found in this user directory"})
+        try:
+            with open(path) as file:
+                data = json.load(file)
+                return data
+        except FileNotFoundError:
+            return {"message":"Error. File not found"}, 404
+
+
         return 0
     def post(self):
         return 0
@@ -123,4 +187,5 @@ api.add_resource(Login, "/login")
 api.add_resource(FileManager, "/<string:username>/<string:doc_id>")
 
 if __name__ == "__main__":
+    __init__()
     app.run(debug=True)
