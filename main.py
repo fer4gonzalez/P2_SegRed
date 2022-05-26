@@ -14,7 +14,7 @@ app = Flask(__name__)
 api = rest.Api(app)
 
 VERSION = "1.0.0"
-EXP_MIN = 5
+EXP_SEC = 300
 
 
 #Lista de diccionarios en los que se guardaran los tokens asociados a cada usuario junto con el tiempo de expiracion
@@ -41,7 +41,7 @@ def exists_user(username):
 def get_user_token(username):
     for i in range(0,len(dictionary_list)):
         if username in dictionary_list[i].values():
-            return dictionary_list[i], i
+            return dictionary_list[i]["token"], i
         else:
             return None
 
@@ -56,9 +56,9 @@ def chk_request(username,doc_id):
                     return {"message":"Invalid token"}
                 if(st_token == token):
                     now = datetime.now()
-                    token_creation = dictionary_list[pos]['exp']
-                    time_diff = now - token_creation
-                    if(time_diff>5):
+                    token_expiration_date = dictionary_list[pos]['exp']
+                    time_diff = token_expiration_date - now
+                    if(time_diff.seconds < EXP_SEC):
                         return True
                     else:
                         return ({"message":"Error.Token expired"})
@@ -128,7 +128,7 @@ class Signup(rest.Resource):
             file.write(content)
             auth_token = uuid4()
             token_msg = {"access_token": auth_token}
-            dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_MIN)})
+            dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
             file.close()
         else:
             return {"message": "User already exists"}, 409
@@ -163,7 +163,7 @@ class Login(rest.Resource):
                     auth_token = uuid4()
                     token_msg = {"access_token": auth_token}
                     if(len(dictionary_list)==0):
-                        dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_MIN)})
+                        dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
                     else:
                         for i in range(0,len(dictionary_list)):
                             if username in dictionary_list[i].values():
@@ -171,7 +171,7 @@ class Login(rest.Resource):
                                 counter = counter +1
                                 
                         if counter == 0:
-                            dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_MIN)})
+                            dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
                         
                     print(dictionary_list)
                     return jsonify(token_msg)
@@ -185,7 +185,8 @@ class Login(rest.Resource):
 
 class FileManager(rest.Resource):
     def get(self,username,doc_id):
-        breakpoing()
+        #breakpoint()
+        dictionary_list.append({'username':"aaron", 'token': "12345a", 'exp': api_functions.expire_date(EXP_SEC)})
         valid = chk_request(username,doc_id)
         if(valid == True):
             path="users/"+username+"/"+doc_id
