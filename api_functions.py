@@ -4,11 +4,11 @@ import json
 from datetime import datetime, timedelta
 from flask import jsonify
 
-def expire_date(min: int):
+def expire_date(sec:int):
     #Fecha actual:
     now = datetime.now()
     #Cálculo de la duración del token en segundos
-    new_date = now + timedelta(minutes=min)
+    new_date = now + timedelta(seconds=sec)
     return new_date
 
 
