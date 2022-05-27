@@ -15,4 +15,5 @@
 - curl http://myserver.local:5000/signup -d '{"username":"Aaron Peces", "password":"segred2022"}' -X POST -H 'Content-Type: application/json'
 - curl http://myserver.local:5000/login -d '{"username":"Aaron Peces", "password":"segred2022"}' -X POST -H 'Content-Type: application/json'
 - curl http://myserver.local:5000/username/doc_id -X GET -H 'Content-Type: application/json' -H 'Authentication: token "token del usuario"'
+- curl http://myserver.local:5000/username/archivo.json -X POST -d '{"doc_content":{...}}' -H 'Content-Type: application/json' -H 'Authentication: token "token del usuario"'
 

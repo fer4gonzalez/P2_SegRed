@@ -25,6 +25,9 @@ parser.add_argument('username', required=True, help="Username cannot be blank!")
 parser.add_argument('password', required=True, help="Password cannot be blank!")
 #parser.add_argument('token', location='headers')
 
+doc_parser = reqparse.RequestParser()
+doc_parser.add_argument('doc_content',required=True)
+
 #--------------------------------MÉTODOS ÚTILES--------------------------------#
 def exists_user(username):
     count = 0
@@ -52,7 +55,7 @@ def chk_request(username,doc_id):
         if(exists_user(username)==True):
             if(type=="token"):
                 st_token,pos = get_user_token(username)
-                if(st_token == None):
+                if(str(st_token) == None):
                     return {"message":"Invalid token"}
                 if(st_token == token):
                     now = datetime.now()
@@ -61,15 +64,15 @@ def chk_request(username,doc_id):
                     if(time_diff.seconds < EXP_SEC):
                         return True
                     else:
-                        return ({"message":"Error.Token expired"})
+                        return ({"message":"Error.Token expired"}), 410
                 else:
-                    return ({"message":"Error.Invalid token"})
+                    return ({"message":"Error.Invalid token"}), 400
             else:
-                return ({"message":"Error on request header"})
+                return ({"message":"Error on request header"}), 400
         else:
-            return ({"message":"Error. User not found"})
+            return ({"message":"Error. User not found"}), 404
     else:
-        return ({"message":"Error. Missing authentication header"})
+        return ({"message":"Error. Missing authentication header"}), 401
 
     return 0
 
@@ -87,6 +90,29 @@ def get_all_docs(username):
     else:
         return None
 
+'''
+def json_validator(data):
+    try:
+        json.loads(data)
+        return True
+    except ValueError as error:
+        print("invalid json: %s" % error)
+        return False
+'''
+def chk_json_extension(doc_id):
+    try:
+        y=doc_id.split(".")
+        if len(y) == 2 and y[1] == "json":
+            return True
+    except:
+        return False
+    return False
+
+def file_wr(path,content):
+        with open(path, 'w') as outfile:
+                json.dump(content, outfile)
+                return outfile.tell()
+
 # ----- INICIALIZACION -----
         
 def __init__():
@@ -99,6 +125,10 @@ def __init__():
             
     if not os.path.exists(".shadow"):
         file=open(".shadow","w")
+        file.close()
+    else:
+        file = open(".shadow", "w")
+        file.write("")
         file.close()
 #--------------------------------API RESOURCES--------------------------------#
 
@@ -126,7 +156,7 @@ class Signup(rest.Resource):
             hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
             content = username + " : " + hash + "\n"
             file.write(content)
-            auth_token = uuid4()
+            auth_token = str(uuid4())
             token_msg = {"access_token": auth_token}
             dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
             file.close()
@@ -160,7 +190,7 @@ class Login(rest.Resource):
                 blocks = line.split()
                 if(hash == blocks[3]):
                     file.close()
-                    auth_token = uuid4()
+                    auth_token = str(uuid4())
                     token_msg = {"access_token": auth_token}
                     if(len(dictionary_list)==0):
                         dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
@@ -186,7 +216,7 @@ class Login(rest.Resource):
 class FileManager(rest.Resource):
     def get(self,username,doc_id):
         #breakpoint()
-        dictionary_list.append({'username':"aaron", 'token': "12345a", 'exp': api_functions.expire_date(EXP_SEC)})
+        #dictionary_list.append({'username':"aaron", 'token': "12345a", 'exp': api_functions.expire_date(EXP_SEC)})
         valid = chk_request(username,doc_id)
         if(valid == True):
             path="users/"+username+"/"+doc_id
@@ -195,7 +225,7 @@ class FileManager(rest.Resource):
                 if(all_docs != None):
                     return all_docs
                 else:
-                    return jsonify({"message":"No docs found in this user directory"})
+                    return {"message":"No docs found in this user directory"},404
             try:
                 with open(path) as file:
                     data = json.load(file)
@@ -205,8 +235,28 @@ class FileManager(rest.Resource):
         else:
             return valid
 
-        return 0
-    def post(self):
+
+    def post(self,username,doc_id):
+        breakpoint()
+        valid = chk_request(username,doc_id)
+        if(valid==True):
+            path="users/"+username+"/"+doc_id
+            if(os.path.exists(path)==False):
+                root, extension = os.path.splitext(path)
+                if(extension != ".json"):
+                    return  {"message":"File extension must be .json"}, 400
+                args=doc_parser.parse_args()
+                doc_content=args['doc_content']
+                if(os.path.exists("users/"+username)==False):
+                    os.mkdir('users/'+username)
+                else:
+                    return {"size": file_wr(path,doc_content)}
+            else:
+                return {"message":"Error. File already exists"},406
+        else: 
+            return valid
+
+                
         return 0
     def put(self):
         return 0
