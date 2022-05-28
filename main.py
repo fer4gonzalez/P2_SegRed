@@ -23,12 +23,31 @@ dictionary_list=[]
 parser = reqparse.RequestParser()
 parser.add_argument('username', required=True, help="Username cannot be blank!")
 parser.add_argument('password', required=True, help="Password cannot be blank!")
-#parser.add_argument('token', location='headers')
 
 doc_parser = reqparse.RequestParser()
 doc_parser.add_argument('doc_content',required=True)
 
-#--------------------------------MÉTODOS ÚTILES--------------------------------#
+#-------------------------------- INICIALIZACION --------------------------------#
+        
+def __init__():
+    if not os.path.exists("users"):
+        try:
+            os.mkdir("users")
+        except OSError:
+            print("Error. The users directory could not be created")
+            return -1
+    #Código añadido para las pruebas, para que cada vez que se inicie la aplicacion se borre el contenido de .shadow       
+    if not os.path.exists(".shadow"):
+        file=open(".shadow","w")
+        file.close()
+    else:
+        file = open(".shadow", "w")
+        file.write("")
+        file.close()
+
+#-------------------------------- MÉTODOS ÚTILES --------------------------------#
+
+#Método que comprueba si existe el usuario pasado por parámetros en el archivo .shadow.
 def exists_user(username):
     count = 0
     file =open(".shadow",'+r') #Apertura del archivo
@@ -41,13 +60,23 @@ def exists_user(username):
     if(count == 0):
         return False
 
+#Método que obtiene el token del usuario en la lista de diccionarios "dictionary_list".
 def get_user_token(username):
     for i in range(0,len(dictionary_list)):
         if username in dictionary_list[i].values():
             return dictionary_list[i]["token"], i
         else:
             return None
+            
+#Método que calcula la hora en la que el token expirará
+def expire_date(sec:int):
+    #Fecha actual:
+    now = datetime.now()
+    #Cálculo de la duración del token en segundos
+    new_date = now + timedelta(seconds=sec)
+    return new_date
 
+#Método que comprueba la petición, orientado sobre todo a la validez del token
 def chk_request(username,doc_id):
     auth=request.headers.get('Authentication')
     if auth != None:
@@ -74,7 +103,6 @@ def chk_request(username,doc_id):
     else:
         return ({"message":"Error. Missing authentication header"}), 401
 
-    return 0
 
 #Método que devuelve todos los archivos de un usuario
 def get_all_docs(username):
@@ -90,47 +118,14 @@ def get_all_docs(username):
     else:
         return None
 
-'''
-def json_validator(data):
-    try:
-        json.loads(data)
-        return True
-    except ValueError as error:
-        print("invalid json: %s" % error)
-        return False
-'''
-def chk_json_extension(doc_id):
-    try:
-        y=doc_id.split(".")
-        if len(y) == 2 and y[1] == "json":
-            return True
-    except:
-        return False
-    return False
-
+#Métoo que escribe el contenido pasado en la variable content en el archivo indicado en path
 def file_wr(path,content):
         with open(path, 'w') as outfile:
                 json.dump(content, outfile)
                 return outfile.tell()
 
-# ----- INICIALIZACION -----
-        
-def __init__():
-    if not os.path.exists("users"):
-        try:
-            os.mkdir("users")
-        except OSError:
-            print("Error. The users directory could not be created")
-            return -1
-            
-    if not os.path.exists(".shadow"):
-        file=open(".shadow","w")
-        file.close()
-    else:
-        file = open(".shadow", "w")
-        file.write("")
-        file.close()
-#--------------------------------API RESOURCES--------------------------------#
+
+#-------------------------------- API RESOURCES --------------------------------#
 
 class Version(rest.Resource):
     def get(self):
@@ -215,10 +210,10 @@ class Login(rest.Resource):
 
 class FileManager(rest.Resource):
     def get(self,username,doc_id):
-        breakpoint()
+        #breakpoint()
         dictionary_list.append({'username':"aaron", 'token': "12345a", 'exp': api_functions.expire_date(EXP_SEC)})
-        valid = chk_request(username,doc_id)
-        if(valid == True):
+        valid_rq = chk_request(username,doc_id)
+        if(valid_rq == True):
             path="users/"+username+"/"+doc_id
             if(doc_id=="_all_docs"):
                 all_docs = get_all_docs(username)
@@ -233,13 +228,13 @@ class FileManager(rest.Resource):
             except FileNotFoundError:
                 return {"message":"Error. File not found"}, 404
         else:
-            return valid
+            return valid_rq
 
 
     def post(self,username,doc_id):
         breakpoint()
-        valid = chk_request(username,doc_id)
-        if(valid==True):
+        valid_rq = chk_request(username,doc_id)
+        if(valid_rq==True):
             path="users/"+username+"/"+doc_id
             if(os.path.exists(path)==False):
                 root, extension = os.path.splitext(path)
@@ -249,19 +244,44 @@ class FileManager(rest.Resource):
                 doc_content=args['doc_content']
                 if(os.path.exists("users/"+username)==False):
                     os.mkdir('users/'+username)
+                    return {"size": file_wr(path,doc_content)}
                 else:
                     return {"size": file_wr(path,doc_content)}
             else:
                 return {"message":"Error. File already exists"},406
         else: 
-            return valid
+            return valid_rq
 
                 
         return 0
-    def put(self):
-        return 0
-    def delete(self):
-        return 0
+
+
+    def put(self,username,doc_id):
+        valid_rq=chk_request(username,doc_id)
+        if(valid_rq==True):
+            path="users/"+username+"/"+doc_id
+            if(os.path.exists(path)==True):
+                args=doc_parser.parse_args()
+                doc_content=args['doc_content']
+                file_wr(path,"")
+                return {"size": file_wr(path,doc_content)}
+            else:
+                return {"message":"File not found. Can not update"},404
+        else:
+            return valid_rq
+
+    def delete(self,username,doc_id):
+        valid_rq=chk_request(username,doc_id)
+        if(valid_rq==True):
+            path = "users/"+username+"/"+doc_id
+            if(os.path.exists(path)):
+                os.remove(path)
+                return {"message":"File deletion successfully completed"}
+            else:
+                return {"message":"Error. File not found"}, 404
+        else:
+            return valid_rq
+
 
 api.add_resource(Version, "/", "/version")
 api.add_resource(Signup, "/signup")
