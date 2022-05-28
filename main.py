@@ -215,8 +215,8 @@ class Login(rest.Resource):
 
 class FileManager(rest.Resource):
     def get(self,username,doc_id):
-        #breakpoint()
-        #dictionary_list.append({'username':"aaron", 'token': "12345a", 'exp': api_functions.expire_date(EXP_SEC)})
+        breakpoint()
+        dictionary_list.append({'username':"aaron", 'token': "12345a", 'exp': api_functions.expire_date(EXP_SEC)})
         valid = chk_request(username,doc_id)
         if(valid == True):
             path="users/"+username+"/"+doc_id
