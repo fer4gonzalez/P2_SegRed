@@ -76,6 +76,20 @@ def expire_date(sec:int):
     new_date = now + timedelta(seconds=sec)
     return new_date
 
+#Método que añade a la lista de diccionarios el diccionario de un usuario con su token y el tiempo de caducidad de este
+def dictionary_adder(username,auth_token):
+    if(len(dictionary_list)==0):
+        dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
+    else:
+        for i in range(0,len(dictionary_list)):
+            if username in dictionary_list[i].values():
+                dictionary_list[i].update({'token': auth_token})
+                counter = counter +1
+                
+        if counter == 0:
+            dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
+    return 0
+
 #Método que comprueba la petición, orientado sobre todo a la validez del token
 def chk_request(username,doc_id):
     auth=request.headers.get('Authentication')
@@ -188,18 +202,7 @@ class Login(rest.Resource):
                     file.close()
                     auth_token = str(uuid4())
                     token_msg = {"access_token": auth_token}
-                    if(len(dictionary_list)==0):
-                        dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
-                    else:
-                        for i in range(0,len(dictionary_list)):
-                            if username in dictionary_list[i].values():
-                                dictionary_list[i].update({'token': auth_token})
-                                counter = counter +1
-                                
-                        if counter == 0:
-                            dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
-                        
-                    print(dictionary_list)
+                    dictionary_adder(username,auth_token)
                     return jsonify(token_msg)
                 else:
                     file.close()
