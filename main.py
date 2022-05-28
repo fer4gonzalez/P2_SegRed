@@ -67,7 +67,7 @@ def get_user_token(username):
             return dictionary_list[i]["token"], i
         else:
             return None
-            
+
 #Método que calcula la hora en la que el token expirará
 def expire_date(sec:int):
     #Fecha actual:
@@ -128,6 +128,7 @@ def file_wr(path,content):
 #-------------------------------- API RESOURCES --------------------------------#
 
 class Version(rest.Resource):
+    #GET: devuelve la versión del programa.
     def get(self):
         return {"version":VERSION}
 
@@ -209,6 +210,14 @@ class Login(rest.Resource):
         return {"message": "Incorrect user or password"}, 403
 
 class FileManager(rest.Resource):
+    '''
+    Todas las operaciones requieren autenticación mediante la cabecera
+    Authentication cuyo valor debe tener el formato: token <token-del-usuario>.
+
+    GET: obtiene el contenido del documento doc_id del usuario username.
+    Si todo va bien, devuelve el contenido íntegro del documento en formato
+    JSON.
+    '''
     def get(self,username,doc_id):
         #breakpoint()
         dictionary_list.append({'username':"aaron", 'token': "12345a", 'exp': api_functions.expire_date(EXP_SEC)})
@@ -221,18 +230,27 @@ class FileManager(rest.Resource):
                     return all_docs
                 else:
                     return {"message":"No docs found in this user directory"},404
+
             try:
                 with open(path) as file:
                     data = json.load(file)
                     return data
             except FileNotFoundError:
                 return {"message":"Error. File not found"}, 404
+
         else:
             return valid_rq
 
-
+    '''
+    POST: crea un nuevo documento con identificador doc_id en el usuario
+    username. Necesita los siguientes argumentos:
+    -doc_content: el contenido del documento a crear en formato JSON.
+    Si todo va bien, devuelve el número de bytes escritos en disco con el
+    formato:
+    {"size": <total_bytes>}
+    '''
     def post(self,username,doc_id):
-        breakpoint()
+        #breakpoint()
         valid_rq = chk_request(username,doc_id)
         if(valid_rq==True):
             path="users/"+username+"/"+doc_id
@@ -240,6 +258,7 @@ class FileManager(rest.Resource):
                 root, extension = os.path.splitext(path)
                 if(extension != ".json"):
                     return  {"message":"File extension must be .json"}, 400
+
                 args=doc_parser.parse_args()
                 doc_content=args['doc_content']
                 if(os.path.exists("users/"+username)==False):
@@ -247,6 +266,7 @@ class FileManager(rest.Resource):
                     return {"size": file_wr(path,doc_content)}
                 else:
                     return {"size": file_wr(path,doc_content)}
+
             else:
                 return {"message":"Error. File already exists"},406
         else: 
@@ -255,7 +275,14 @@ class FileManager(rest.Resource):
                 
         return 0
 
-
+    '''
+    PUT: actualiza el contenido del documento doc_id del usuario username.
+    Necesita los siguientes argumentos:
+    -doc_content: nuevo contenido del documento en formato JSON.
+    Si todo va bien, devuelve el número de bytes escritos en disco con el
+    formato:
+    {"size": <total_bytes>}
+    '''
     def put(self,username,doc_id):
         valid_rq=chk_request(username,doc_id)
         if(valid_rq==True):
@@ -270,6 +297,11 @@ class FileManager(rest.Resource):
         else:
             return valid_rq
 
+    '''
+    DELETE: borra el documento doc_id del usuario username.
+    Si todo va bien, devuelve una respuesta vacía:
+    {}
+    '''
     def delete(self,username,doc_id):
         valid_rq=chk_request(username,doc_id)
         if(valid_rq==True):
