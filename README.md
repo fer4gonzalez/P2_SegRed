@@ -29,4 +29,5 @@ What do you want to do?
 - La cuarta opción ejecutará el comando curl con el verbo post para la creación de un archivo y el directorio correspondiente al usuario.
 - La quinta opción ejecutará el comando curl con el verbo put para la actualización del contenido de un archivo ya existente
 - La sexta opción ejecutará el comando curl con el verbo delete para la eliminación de un archivo existente.
-- La séptima opción terminará la ejecución del script.
+- La séptima opción borra los subdirectorios que se hayan creado dentro del directorio de usuarios y borra el contenido del archivo .shadow.
+- La octava opción termina la ejecución del script
