@@ -221,7 +221,7 @@ class Login(rest.Resource):
             return {"message":"None values are not supported"}, 400
         if(chk_string(username)):
             return {"message":"Error, username cannot contain special characters"}, 400
-            
+
         lines = file.readlines()
         for line in lines:
             if username in line:
@@ -242,12 +242,11 @@ class Login(rest.Resource):
 
 class FileManager(rest.Resource):
     '''
-    Todas las operaciones requieren autenticación mediante la cabecera
-    Authentication cuyo valor debe tener el formato: token <token-del-usuario>.
-
-    GET: obtiene el contenido del documento doc_id del usuario username.
-    Si todo va bien, devuelve el contenido íntegro del documento en formato
-    JSON.
+    Todas las operaciones requieren autenticación mediante la cabecera Authentication cuyo valor debe tener el formato: 
+    token <token-del-usuario>. 
+    
+    GET: obtiene el contenido del documento doc_id del usuario username.Si todo va bien, devuelve el contenido íntegro 
+    del documento en formato JSON.
     '''
     def get(self,username,doc_id):
         #breakpoint()
@@ -273,12 +272,9 @@ class FileManager(rest.Resource):
             return valid_rq
 
     '''
-    POST: crea un nuevo documento con identificador doc_id en el usuario
-    username. Necesita los siguientes argumentos:
+    POST: crea un nuevo documento con identificador doc_id en el usuario username. Necesita los siguientes argumentos:
     -doc_content: el contenido del documento a crear en formato JSON.
-    Si todo va bien, devuelve el número de bytes escritos en disco con el
-    formato:
-    {"size": <total_bytes>}
+    Si todo va bien, devuelve el número de bytes escritos en disco con el formato: {"size": <total_bytes>}
     '''
     def post(self,username,doc_id):
         #breakpoint()
@@ -307,12 +303,9 @@ class FileManager(rest.Resource):
         return 0
 
     '''
-    PUT: actualiza el contenido del documento doc_id del usuario username.
-    Necesita los siguientes argumentos:
+    PUT: actualiza el contenido del documento doc_id del usuario username.Necesita los siguientes argumentos:
     -doc_content: nuevo contenido del documento en formato JSON.
-    Si todo va bien, devuelve el número de bytes escritos en disco con el
-    formato:
-    {"size": <total_bytes>}
+    Si todo va bien, devuelve el número de bytes escritos en disco con el formato: {"size": <total_bytes>}
     '''
     def put(self,username,doc_id):
         valid_rq=chk_request(username,doc_id)
@@ -329,8 +322,7 @@ class FileManager(rest.Resource):
             return valid_rq
 
     '''
-    DELETE: borra el documento doc_id del usuario username.
-    Si todo va bien, devuelve una respuesta vacía:
+    DELETE: borra el documento doc_id del usuario username. Si todo va bien, devuelve una respuesta vacía:
     {}
     '''
     def delete(self,username,doc_id):
@@ -339,7 +331,7 @@ class FileManager(rest.Resource):
             path = "users/"+username+"/"+doc_id
             if(os.path.exists(path)):
                 os.remove(path)
-                return {"message":"File deletion successfully completed"}
+                return {}
             else:
                 return {"message":"Error. File not found"}, 404
         else:
