@@ -18,7 +18,6 @@ Primero debemos ejecutar en una shell el main.py de la siguiente manera "python3
 al servidor hemos creado un script que actua como cliente y permite hacerlo de una manera cómoda. Para ejecutarlo pondremos
 en la terminal "python3 script_app.py", y se mostrará el siguiente menu:
 
-Practica 2 Seguridad en Redes 2022
 What do you want to do? 
 1. Signup
 2. Login
@@ -26,7 +25,8 @@ What do you want to do?
 4. Create a file 
 5. Change the contents of a file 
 6. Delete file 
-7. Exit
+7. Reset API 
+8. Exit
 
 - La primera opción ejecutará el comando curl con el verbo post para la creación de un nuevo usuario.
 - La segunda opción ejecutará el comando curl con el verbo post para la autenticación de un usuario ya existente.
