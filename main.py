@@ -125,9 +125,9 @@ def chk_request(username,doc_id):
                     if(time_diff.seconds < EXP_SEC):
                         return True
                     else:
-                        return ({"message":"Error.Token expired"}), 410
+                        return ({"message":"Error. Token expired"}), 410
                 else:
-                    return ({"message":"Error.Invalid token"}), 400
+                    return ({"message":"Error. Token does not match user"}), 400
             else:
                 return ({"message":"Error on request header"}), 400
         else:
