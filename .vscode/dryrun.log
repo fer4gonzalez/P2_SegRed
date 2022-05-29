@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/peces/ReposGit/P2_SegRed'
+rm -f *.out
+make: Leaving directory '/home/peces/ReposGit/P2_SegRed'
+ 

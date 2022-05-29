@@ -18,7 +18,7 @@ VERSION = "1.0.0"
 #Tiempo de expiración del token en segundos (300s = 5min)
 EXP_SEC = 300
 #Caracteres especiales que no puede contener username y doc_id
-SPECIAL_CHARS = " \ºª|@#~½¬!·$%&/()=?´`+ç{-.,;:_¨"
+SPECIAL_CHARS = " \ºª|@#~½¬!·$%&/()=?´`+ç{-,;:_¨"
 #Lista de diccionarios en los que se guardaran los tokens asociados a cada usuario junto con el tiempo de expiracion
 dictionary_list=[]
 
@@ -40,7 +40,8 @@ def __init__():
         except OSError:
             print("Error. The users directory could not be created")
             return -1
-    #Código añadido para las pruebas, para que cada vez que se inicie la aplicacion se borre el contenido de .shadow       
+    #Código añadido para las pruebas, para que cada vez que se inicie la aplicacion se borre el contenido de .shadow      
+    '''
     if not os.path.exists(".shadow"):
         file=open(".shadow","w")
         file.close()
@@ -48,6 +49,7 @@ def __init__():
         file = open(".shadow", "w")
         file.write("")
         file.close()
+    '''
 
 #-------------------------------- MÉTODOS ÚTILES --------------------------------#
 #Método que comprueba si hay caracteres especiales en la cadena que se le pasa por parametro
@@ -88,6 +90,7 @@ def expire_date(sec:int):
 
 #Método que añade a la lista de diccionarios el diccionario de un usuario con su token y el tiempo de caducidad de este
 def dictionary_adder(username,auth_token):
+    counter = 0
     if(len(dictionary_list)==0):
         dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
     else:
@@ -103,14 +106,14 @@ def dictionary_adder(username,auth_token):
 #Método que comprueba la petición, orientado sobre todo a la validez del token
 def chk_request(username,doc_id):
 
-    if any(chk_special_char(username)):
+    if (chk_special_char(username)):
         return {"message":"Error, username cannot contain special characters"}, 400
-    if any(chk_special_char(doc_id)):
+    if (chk_special_char(doc_id)):
         return {"message":"Error, doc_id cannot contain special characters"}, 400
 
     auth=request.headers.get('Authentication')
     if auth != None:
-        type,token = auth.split()
+        type,token = auth.split(" ",1)
         if(exists_user(username)==True):
             if(type=="token"):
                 st_token,pos = get_user_token(username)
@@ -151,8 +154,8 @@ def get_all_docs(username):
 #Métoo que escribe el contenido pasado en la variable content en el archivo indicado en path
 def file_wr(path,content):
         with open(path, 'w') as outfile:
-                json.dump(content, outfile)
-                return outfile.tell()
+            json.dump(content, outfile)
+            return outfile.tell()
 
 
 #-------------------------------- API RESOURCES --------------------------------#
@@ -216,7 +219,7 @@ class Login(rest.Resource):
         for line in lines:
             if username in line:
                 blocks = line.split()
-                if(hash == blocks[3]):
+                if(hash == blocks[2]):
                     file.close()
                     auth_token = str(uuid4())
                     token_msg = {"access_token": auth_token}
@@ -241,7 +244,7 @@ class FileManager(rest.Resource):
     '''
     def get(self,username,doc_id):
         #breakpoint()
-        dictionary_list.append({'username':"aaron", 'token': "12345a", 'exp': api_functions.expire_date(EXP_SEC)})
+        #dictionary_list.append({'username':"aaron", 'token': "12345a", 'exp': api_functions.expire_date(EXP_SEC)})
         valid_rq = chk_request(username,doc_id)
         if(valid_rq == True):
             path="users/"+username+"/"+doc_id
