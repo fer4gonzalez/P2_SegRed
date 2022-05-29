@@ -52,7 +52,7 @@ def __init__():
 
 #-------------------------------- MÉTODOS ÚTILES --------------------------------#
 #Método que comprueba si hay caracteres especiales en la cadena que se le pasa por parametro
-def chk_special_char(string):
+def chk_string(string):
     if any(c in SPECIAL_CHARS for c in string):
         return True
     else:
@@ -104,10 +104,11 @@ def dictionary_adder(username,auth_token):
 
 #Método que comprueba la petición, orientado sobre todo a la validez del token
 def chk_request(username,doc_id):
-
-    if (chk_special_char(username)):
+    if(username == "" or doc_id == ""):
+            return {"message":"None values are not supported"}, 400
+    if (chk_string(username)):
         return {"message":"Error, username cannot contain special characters"}, 400
-    if (chk_special_char(doc_id)):
+    if (chk_string(doc_id)):
         return {"message":"Error, doc_id cannot contain special characters"}, 400
 
     auth=request.headers.get('Authentication')
@@ -178,7 +179,9 @@ class Signup(rest.Resource):
         args = parser.parse_args() #Parseo de los argumentos
         username = args.username
         password = args.password
-        if(chk_special_char(username)):
+        if(username == "" or password == ""):
+            return {"message":"None values are not supported"}, 400
+        if(chk_string(username)):
             return {"message":"Error, username cannot contain special characters"}, 400
         file =open(".shadow",'+r') #Apertura del archivo
 
@@ -214,6 +217,11 @@ class Login(rest.Resource):
         file = open(".shadow", 'r')
         counter = 0
 
+        if(username == "" or password == ""):
+            return {"message":"None values are not supported"}, 400
+        if(chk_string(username)):
+            return {"message":"Error, username cannot contain special characters"}, 400
+            
         lines = file.readlines()
         for line in lines:
             if username in line:
