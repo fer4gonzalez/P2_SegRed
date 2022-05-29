@@ -18,7 +18,7 @@ def signup():
     username = input()
     print("Enter your new password")
     password = input()
-    print("\n\n")
+    print("\n")
     data = '{"username":"'+username+'", "password":"'+password+'"}'
     
     try:
@@ -36,7 +36,7 @@ def login():
     username = input()
     print("Enter your password")
     password = input()
-    print("\n\n")
+    print("\n")
     data = '{"username":"'+username+'", "password":"'+password+'"}'
     
     try:
@@ -58,6 +58,7 @@ class FileManager():
         doc_id = input()
         print("Enter your token")
         token = input()
+        print("\n")
         get_url = URL + "/"+username+"/"+doc_id
         string_auth= "token "+token
         auth_header = {'Authentication': string_auth}
@@ -83,6 +84,7 @@ class FileManager():
         token = input()
         print("Enter file content")
         content = input()
+        print("\n")
         data = '{"doc_content":{"message": "'+content+'"}}'
         post_url = URL + "/"+username+"/"+doc_id
         string_auth= "token "+token
@@ -108,6 +110,7 @@ class FileManager():
         token = input()
         print("Enter new file content")
         content = input()
+        print("\n")
         data = '{"doc_content":{"message": "'+content+'"}}'
         put_url = URL + "/"+username+"/"+doc_id
         string_auth= "token "+token
@@ -131,6 +134,7 @@ class FileManager():
         doc_id = input()
         print("Enter your token")
         token = input()
+        print("\n")
         delete_url = URL + "/"+username+"/"+doc_id
         string_auth= "token "+token
         auth_header = {'Authentication': string_auth}
