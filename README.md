@@ -11,9 +11,22 @@
 ### Configuracion entorno
 - Configurar archivo /etc/hosts para redireccionar 127.0.0.1 a myserver.local.
 
-### Ejemplos curl
-- curl http://myserver.local:5000/signup -d '{"username":"Aaron Peces", "password":"segred2022"}' -X POST -H 'Content-Type: application/json'
-- curl http://myserver.local:5000/login -d '{"username":"Aaron Peces", "password":"segred2022"}' -X POST -H 'Content-Type: application/json'
-- curl http://myserver.local:5000/username/doc_id -X GET -H 'Content-Type: application/json' -H 'Authentication: token "token del usuario"'
-- curl http://myserver.local:5000/username/archivo.json -X POST -d '{"doc_content":{...}}' -H 'Content-Type: application/json' -H 'Authentication: token "token del usuario"'
+### Ejecución de la práctica
+Para poder ejecutar de una manera semiautomatica el programa hemos añadido un script. Cuando lo ejecutamos nos mostrará el siguiente menu:
+Practica 2 Seguridad en Redes 2022
+What do you want to do? 
+1. Signup
+2. Login
+3. Get the contents of a file 
+4. Create a file 
+5. Change the contents of a file 
+6. Delete file 
+7. Exit
 
+- La primera opción ejecutará el comando curl con el verbo post para la creación de un nuevo usuario.
+- La segunda opción ejecutará el comando curl con el verbo post para la autenticación de un usuario ya existente.
+- La tercera opción ejecutará el comando curl con el verbo get para obtener el contenido del archivo existente en el directorio del usuario.
+- La cuarta opción ejecutará el comando curl con el verbo post para la creación de un archivo y el directorio correspondiente al usuario.
+- La quinta opción ejecutará el comando curl con el verbo put para la actualización del contenido de un archivo ya existente
+- La sexta opción ejecutará el comando curl con el verbo delete para la eliminación de un archivo existente.
+- La séptima opción terminará la ejecución del script.

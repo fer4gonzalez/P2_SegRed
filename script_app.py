@@ -147,7 +147,7 @@ class FileManager():
 
 def main():
     #breakpoint()
-    print("Practica 2 Seguridad en Redes 2022\nWhat do you want to do? \n1. Signup\n2. Login\n3. Obtener contenido de un archivo \n4. Crear un archivo \n5. Cambiar el contenido de un archivo \n6. Borrar archivo \n7.Exit")
+    print("Practica 2 Seguridad en Redes 2022\nWhat do you want to do? \n1. Signup\n2. Login\n3. Get the contents of a file \n4. Create a file \n5. Change the contents of a file \n6. Delete file \n7. Exit")
     option = input()
     if option == "1":
         signup()
@@ -164,7 +164,7 @@ def main():
     elif option == "7":
         global CONTINUE
         CONTINUE = False
-        print("Programa finalizado")
+        print("Script finished")
     return 0
 
 if __name__ == "__main__":
