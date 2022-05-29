@@ -10,9 +10,14 @@
 
 ### Configuracion entorno
 - Configurar archivo /etc/hosts para redireccionar 127.0.0.1 a myserver.local.
+- Instalar el modulo httplib2 con "pip install httplib2"
+- Instalar el modulo requests con "pip install requests"
 
 ### Ejecución de la práctica
-Para poder ejecutar de una manera semiautomatica el programa hemos añadido un script. Cuando lo ejecutamos nos mostrará el siguiente menu:
+Primero debemos ejecutar en una shell el main.py de la siguiente manera "python3 main.py". Para poder enviar las peticiones
+al servidor hemos creado un script que actua como cliente y permite hacerlo de una manera cómoda. Para ejecutarlo pondremos
+en la terminal "python3 script_app.py", y se mostrará el siguiente menu:
+
 Practica 2 Seguridad en Redes 2022
 What do you want to do? 
 1. Signup
