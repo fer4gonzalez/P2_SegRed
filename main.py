@@ -13,17 +13,21 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 api = rest.Api(app)
 
+#Versión del programa
 VERSION = "1.0.0"
+#Tiempo de expiración del token en segundos (300s = 5min)
 EXP_SEC = 300
-
-
+#Caracteres especiales que no puede contener username y doc_id
+SPECIAL_CHARS = " \ºª|@#~½¬!·$%&/()=?´`+ç{-.,;:_¨"
 #Lista de diccionarios en los que se guardaran los tokens asociados a cada usuario junto con el tiempo de expiracion
 dictionary_list=[]
 
+#Argumentos para signup y login
 parser = reqparse.RequestParser()
 parser.add_argument('username', required=True, help="Username cannot be blank!")
 parser.add_argument('password', required=True, help="Password cannot be blank!")
 
+#Argumentos para FileManager
 doc_parser = reqparse.RequestParser()
 doc_parser.add_argument('doc_content',required=True)
 
@@ -46,6 +50,12 @@ def __init__():
         file.close()
 
 #-------------------------------- MÉTODOS ÚTILES --------------------------------#
+#Método que comprueba si hay caracteres especiales en la cadena que se le pasa por parametro
+def chk_special_char(string):
+    if any(c in SPECIAL_CHARS for c in string):
+        return True
+    else:
+        return False
 
 #Método que comprueba si existe el usuario pasado por parámetros en el archivo .shadow.
 def exists_user(username):
@@ -92,6 +102,12 @@ def dictionary_adder(username,auth_token):
 
 #Método que comprueba la petición, orientado sobre todo a la validez del token
 def chk_request(username,doc_id):
+
+    if any(chk_special_char(username)):
+        return {"message":"Error, username cannot contain special characters"}, 400
+    if any(chk_special_char(doc_id)):
+        return {"message":"Error, doc_id cannot contain special characters"}, 400
+
     auth=request.headers.get('Authentication')
     if auth != None:
         type,token = auth.split()
@@ -160,6 +176,8 @@ class Signup(rest.Resource):
         args = parser.parse_args() #Parseo de los argumentos
         username = args.username
         password = args.password
+        if(chk_special_char(username)):
+            return {"message":"Error, username cannot contain special characters"}, 400
         file =open(".shadow",'+r') #Apertura del archivo
 
         if(exists_user(username)==False):
