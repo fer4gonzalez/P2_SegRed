@@ -3,6 +3,7 @@ import json
 import httplib2
 from wsgiref import headers
 import requests
+import shutil
 
 URL = 'http://myserver.local:5000'
 PORT = '5000'
@@ -144,10 +145,35 @@ class FileManager():
         except Exception as e:
             print( 'Exception >> ' + type(e).__name__ )
             raise e 
+def resetAPI():
+    
+    if not os.path.exists("users"):
+        try:
+            os.mkdir("users")
+        except OSError:
+            print("Error. The users directory could not be created")
+            return -1
+    else:
+        try:
+            shutil.rmtree("users")
+            os.mkdir("users")
+        except OSError as e:
+            print(e)
+        else:
+            print("Directory is deleted successfully")
+
+
+    if not os.path.exists(".shadow"):
+        file=open(".shadow","w")
+        file.close() 
+    else:
+        file = open(".shadow", "w")
+        file.write("")
+        file.close()
 
 def main():
     #breakpoint()
-    print("Practica 2 Seguridad en Redes 2022\nWhat do you want to do? \n1. Signup\n2. Login\n3. Get the contents of a file \n4. Create a file \n5. Change the contents of a file \n6. Delete file \n7. Exit")
+    print("Practica 2 Seguridad en Redes 2022\nWhat do you want to do? \n1. Signup\n2. Login\n3. Get the contents of a file \n4. Create a file \n5. Change the contents of a file \n6. Delete file \n7. Reset API \n8. Exit")
     option = input()
     if option == "1":
         signup()
@@ -162,6 +188,8 @@ def main():
     elif option == "6":
         FileManager.delete()
     elif option == "7":
+        resetAPI()
+    elif option == "8":
         global CONTINUE
         CONTINUE = False
         print("Script finished")
