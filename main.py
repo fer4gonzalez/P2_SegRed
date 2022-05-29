@@ -4,7 +4,6 @@ from flask_restful import reqparse
 import flask_restful as rest
 from uuid import uuid4
 import json
-import api_functions
 import hashlib
 import os
 from datetime import datetime, timedelta
@@ -18,7 +17,7 @@ VERSION = "1.0.0"
 #Tiempo de expiración del token en segundos (300s = 5min)
 EXP_SEC = 300
 #Caracteres especiales que no puede contener username y doc_id
-SPECIAL_CHARS = " \ºª|@#~½¬!·$%&/()=?´`+ç{-,;:_¨"
+SPECIAL_CHARS = " \ºª|@#~½¬!·$%&/()=?´`+ç{-,;:¨"
 #Lista de diccionarios en los que se guardaran los tokens asociados a cada usuario junto con el tiempo de expiracion
 dictionary_list=[]
 
@@ -92,7 +91,7 @@ def expire_date(sec:int):
 def dictionary_adder(username,auth_token):
     counter = 0
     if(len(dictionary_list)==0):
-        dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
+        dictionary_list.append({'username':username, 'token': auth_token, 'exp': expire_date(EXP_SEC)})
     else:
         for i in range(0,len(dictionary_list)):
             if username in dictionary_list[i].values():
@@ -100,7 +99,7 @@ def dictionary_adder(username,auth_token):
                 counter = counter +1
                 
         if counter == 0:
-            dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
+            dictionary_list.append({'username':username, 'token': auth_token, 'exp': expire_date(EXP_SEC)})
     return 0
 
 #Método que comprueba la petición, orientado sobre todo a la validez del token
@@ -189,7 +188,7 @@ class Signup(rest.Resource):
             file.write(content)
             auth_token = str(uuid4())
             token_msg = {"access_token": auth_token}
-            dictionary_list.append({'username':username, 'token': auth_token, 'exp': api_functions.expire_date(EXP_SEC)})
+            dictionary_list.append({'username':username, 'token': auth_token, 'exp': expire_date(EXP_SEC)})
             file.close()
         else:
             return {"message": "User already exists"}, 409
