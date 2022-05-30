@@ -59,9 +59,8 @@ def chk_string(string):
         return False
 
 #Método que comprueba si existe el usuario pasado por parámetros en el archivo .shadow.
-def exists_user(username):
+def exists_user(username,file):
     count = 0
-    file =open(".shadow",'+r') #Apertura del archivo
     lines = file.readlines()
     for line in lines:
         if username in line:
@@ -185,7 +184,7 @@ class Signup(rest.Resource):
             return {"message":"Error, username cannot contain special characters"}, 400
         file =open(".shadow",'+r') #Apertura del archivo
 
-        if(exists_user(username)==False):
+        if(exists_user(username,file)==False):
             hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
             content = username + " : " + hash + "\n"
             file.write(content)
