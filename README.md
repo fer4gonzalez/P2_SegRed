@@ -10,6 +10,8 @@
 
 ### Configuracion entorno
 - Configurar archivo /etc/hosts para redireccionar 127.0.0.1 a myserver.local.
+- Insalar el módulo flask con "pip install flask"
+- Instalar el módulo flask-restful con "pip install flask-restful"
 - Instalar el modulo httplib2 con "pip install httplib2"
 - Instalar el modulo requests con "pip install requests"
 
