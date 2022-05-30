@@ -344,4 +344,4 @@ api.add_resource(FileManager, "/<string:username>/<string:doc_id>")
 
 if __name__ == "__main__":
     __init__()
-    app.run(debug=True)
+    app.run(debug=True,ssl_context=("cert.pem","key.pem"))

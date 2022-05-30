@@ -4,11 +4,14 @@ import httplib2
 from wsgiref import headers
 import requests
 import shutil
+import urllib3
 
-URL = 'http://myserver.local:5000'
+urllib3.disable_warnings()
+
+URL = 'https://myserver.local:5000'
 PORT = '5000'
-URL_SIGNUP = 'http://myserver.local:5000/signup'
-URL_LOGIN = 'http://myserver.local:5000/login'
+URL_SIGNUP = 'https://myserver.local:5000/signup'
+URL_LOGIN = 'https://myserver.local:5000/login'
 HEADERS = {'Content-Type': 'application/json'}
 
 CONTINUE = True
@@ -22,7 +25,7 @@ def signup():
     data = '{"username":"'+username+'", "password":"'+password+'"}'
     
     try:
-        resp = requests.post( URL_SIGNUP, headers = HEADERS, data = data)
+        resp = requests.post( URL_SIGNUP, headers = HEADERS, data = data, verify = False)
         print(resp.json())
         print("\n\n")
 
@@ -40,7 +43,7 @@ def login():
     data = '{"username":"'+username+'", "password":"'+password+'"}'
     
     try:
-        resp = requests.post( URL_LOGIN, headers = HEADERS, data = data)
+        resp = requests.post( URL_LOGIN, headers = HEADERS, data = data, verify=False)
         print(resp.json())
         print("\n\n")
 
