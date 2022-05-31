@@ -95,6 +95,7 @@ def dictionary_adder(username,auth_token):
         for i in range(0,len(dictionary_list)):
             if username in dictionary_list[i].values():
                 dictionary_list[i].update({'token': auth_token})
+                dictionary_list[i].update({'exp': expire_date(EXP_SEC)})
                 counter = counter +1
                 
         if counter == 0:
@@ -110,30 +111,38 @@ def chk_request(username,doc_id):
     if (chk_string(doc_id)):
         return {"message":"Error, doc_id cannot contain special characters"}, 400
 
+    file = open(".shadow",'r')
     auth=request.headers.get('Authentication')
     if auth != None:
         type,token = auth.split(" ",1)
-        if(exists_user(username)==True):
+        if(exists_user(username,file)==True):
             if(type=="token"):
                 st_token,pos = get_user_token(username)
                 if(str(st_token) == None):
                     return {"message":"Invalid token"}
+                    file.close()
                 if(st_token == token):
                     now = datetime.now()
                     token_expiration_date = dictionary_list[pos]['exp']
                     time_diff = token_expiration_date - now
                     if(time_diff.seconds < EXP_SEC):
                         return True
+                        file.close()
                     else:
                         return ({"message":"Error. Token expired"}), 410
+                        file.close()
                 else:
                     return ({"message":"Error. Token does not match user"}), 400
+                    file.close()
             else:
                 return ({"message":"Error on request header"}), 400
+                file.close()
         else:
             return ({"message":"Error. User not found"}), 404
+            file.close()
     else:
         return ({"message":"Error. Missing authentication header"}), 401
+        file.close()
 
 
 #Método que devuelve todos los archivos de un usuario

@@ -69,7 +69,7 @@ class FileManager():
         HEADERS = {**HEADERS,**auth_header}
 
         try:
-            resp = requests.get( get_url, headers = HEADERS)
+            resp = requests.get( get_url, headers = HEADERS, verify = False)
             print(resp.json())
             print("\n\n")
 
@@ -96,7 +96,7 @@ class FileManager():
         HEADERS = {**HEADERS,**auth_header}
 
         try:
-            resp = requests.post( post_url, headers = HEADERS, data = data)
+            resp = requests.post( post_url, headers = HEADERS, data = data, verify = False)
             print(resp.json())
             print("\n\n")
 
@@ -122,7 +122,7 @@ class FileManager():
         HEADERS = {**HEADERS,**auth_header}
 
         try:
-            resp = requests.put( put_url, headers = HEADERS, data = data)
+            resp = requests.put( put_url, headers = HEADERS, data = data, verify = False)
             print(resp.json())
             print("\n\n")
 
@@ -145,7 +145,7 @@ class FileManager():
         HEADERS = {**HEADERS,**auth_header}
 
         try:
-            resp = requests.delete(delete_url, headers = HEADERS)
+            resp = requests.delete(delete_url, headers = HEADERS, verify = False)
             print(resp.json())
             print("\n\n")
 
