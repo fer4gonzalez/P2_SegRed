@@ -16,6 +16,12 @@ HEADERS = {'Content-Type': 'application/json'}
 
 CONTINUE = True
 
+def version():
+    resp = requests.get(URL+"/version", verify = False)
+    print("\n\n")
+    print(resp.json())
+    print("\n\n")
+
 def signup():
     print("Enter a new username")
     username = input()
@@ -180,9 +186,11 @@ def resetAPI():
 
 def main():
     #breakpoint()
-    print("Practica 2 Seguridad en Redes 2022\nWhat do you want to do? \n1. Signup\n2. Login\n3. Get the contents of a file \n4. Create a file \n5. Change the contents of a file \n6. Delete file \n7. Reset API \n8. Exit")
+    print("Practica 2 Seguridad en Redes 2022\nWhat do you want to do? \n0. Show app version\n1. Signup\n2. Login\n3. Get the contents of a file \n4. Create a file \n5. Change the contents of a file \n6. Delete file \n7. Reset API \n8. Exit")
     option = input()
-    if option == "1":
+    if option == "0":
+        version()
+    elif option == "1":
         signup()
     elif option == "2":
         login()

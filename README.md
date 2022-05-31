@@ -23,6 +23,7 @@ al servidor hemos creado un script que actua como cliente y permite hacerlo de u
 en la terminal "python3 script_app.py", y se mostrará el siguiente menu:
 
 What do you want to do? 
+0. Show app version
 1. Signup
 2. Login
 3. Get the contents of a file 
@@ -32,11 +33,12 @@ What do you want to do?
 7. Reset API 
 8. Exit
 
-- La primera opción ejecutará el comando curl con el verbo post para la creación de un nuevo usuario.
-- La segunda opción ejecutará el comando curl con el verbo post para la autenticación de un usuario ya existente.
-- La tercera opción ejecutará el comando curl con el verbo get para obtener el contenido del archivo existente en el directorio del usuario.
-- La cuarta opción ejecutará el comando curl con el verbo post para la creación de un archivo y el directorio correspondiente al usuario.
-- La quinta opción ejecutará el comando curl con el verbo put para la actualización del contenido de un archivo ya existente
-- La sexta opción ejecutará el comando curl con el verbo delete para la eliminación de un archivo existente.
-- La séptima opción borra los subdirectorios que se hayan creado dentro del directorio de usuarios y borra el contenido del archivo .shadow.
-- La octava opción termina la ejecución del script
+- La opción "0" ejecutará el comando curl con el verbo get para obtener la versión de la app.
+- La opción "1" ejecutará el comando curl con el verbo post para la creación de un nuevo usuario.
+- La opción "2" ejecutará el comando curl con el verbo post para la autenticación de un usuario ya existente.
+- La opción "3" ejecutará el comando curl con el verbo get para obtener el contenido del archivo existente en el directorio del usuario.
+- La opción "4" ejecutará el comando curl con el verbo post para la creación de un archivo y el directorio correspondiente al usuario.
+- La opción "5" ejecutará el comando curl con el verbo put para la actualización del contenido de un archivo ya existente
+- La opción "6" ejecutará el comando curl con el verbo delete para la eliminación de un archivo existente.
+- La opción "7" borra los subdirectorios que se hayan creado dentro del directorio de usuarios y borra el contenido del archivo .shadow.
+- La opción "8" termina la ejecución del script
